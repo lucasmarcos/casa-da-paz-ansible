@@ -23,9 +23,8 @@
         state: absent
       when: existing_mc_dir.stat.exists
 
-    - ansible.windows.win_command: >-
-        powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
-        -Command "Move-Item -Path '{{ mcpaz_dir }}\mc' -Destination '{{ mcpaz_mc_backup_dir }}'"
+    - ansible.windows.win_shell: |
+        Move-Item -Path '{{ mcpaz_dir }}\mc' -Destination '{{ mcpaz_mc_backup_dir }}'
       when: existing_mc_dir.stat.exists
 
     - ansible.windows.win_file:
@@ -56,24 +55,21 @@
         src: mcpaz/run.bat
         dest: '{{ mcpaz_dir }}\run.bat'
 
-    - ansible.windows.win_command: >-
-        powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
-        -Command "Move-Item -Path '{{ mcpaz_mc_backup_dir }}' -Destination '{{ mcpaz_dir }}\mc'"
+    - ansible.windows.win_shell: |
+        Move-Item -Path '{{ mcpaz_mc_backup_dir }}' -Destination '{{ mcpaz_dir }}\mc'
       when: existing_mc_dir.stat.exists
 
     - ansible.windows.win_get_url:
         url: '{{ node_zip_url }}'
         dest: '{{ node_zip_path }}'
 
-    - ansible.windows.win_command: >-
-        powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
-        -Command "Expand-Archive -LiteralPath '{{ node_zip_path }}' -DestinationPath '{{ mcpaz_temp_dir }}' -Force"
+    - ansible.windows.win_shell: |
+        Expand-Archive -LiteralPath '{{ node_zip_path }}' -DestinationPath '{{ mcpaz_temp_dir }}' -Force
       args:
         creates: '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}\node.exe'
 
-    - ansible.windows.win_command: >-
-        powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
-        -Command "Move-Item -Path '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}' -Destination '{{ mcpaz_dir }}\node'"
+    - ansible.windows.win_shell: |
+        Move-Item -Path '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}' -Destination '{{ mcpaz_dir }}\node'
 
     - ansible.windows.win_command: >-
         {{ mcpaz_dir }}\node\npm.cmd install
