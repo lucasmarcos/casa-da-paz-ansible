@@ -1,0 +1,1 @@
+- Instalar Minecraft no computador `PAZ11`.
