@@ -13,11 +13,10 @@ Playbooks Ansible para administrar os computadores Windows da Casa da Paz pela r
 - `install-firefox.yml`: instala Firefox
 - `configure-firefox-policies.yml`: aplica politicas do Firefox
 - `install-p7zip.yml`: instala 7-Zip
-- `install-gcompris.yml`: instala GCompris por MSI
+- `install-gcompris.yml`: instala GCompris com versao parametrizavel
 - `install-gcompris-from-local-exe.yml`: instala GCompris a partir de um `.exe` local
 - `install-mcpaz-launcher.yml`: instala o launcher `mcpaz`, baixa o Node e instala as dependencias npm
 - `install-temurin-jre.yml`: instala o Temurin JRE 25 para Windows x64
-- `upgrade-gcompris.yml`: atualiza GCompris
 - `check-gcompris-version.yml`: verifica a versao do GCompris
 - `install-ktuberling.yml`: instala Ktuberling
 - `install-veyon.yml`: instala Veyon
