@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "dependencies": {
+    "minecraft-launcher-core": "^3.18.2"
+  }
+}
