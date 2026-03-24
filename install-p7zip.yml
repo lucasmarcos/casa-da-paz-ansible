@@ -1,4 +1,4 @@
-- hosts: PAZ15
+- hosts: paz
   gather_facts: no
   tasks:
     - win_package:

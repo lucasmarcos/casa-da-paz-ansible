@@ -34,7 +34,7 @@ Playbooks Ansible para administrar os computadores Windows da Casa da Paz pela r
 Exemplo:
 
 ```bash
-ansible-playbook -i hosts.ini install-gcompris.yml
+ansible-playbook -i hosts.ini -f 20 install-gcompris.yml
 ```
 
 Para rodar em um host especifico:
