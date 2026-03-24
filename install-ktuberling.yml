@@ -1,15 +1,49 @@
 - hosts: paz
+  gather_facts: no
   tasks:
-    - win_shell: |
-        if (Test-Path -Path "$env:UserProfile\Desktop\homembatata") {
-            exit
-        }
-        curl.exe -LO 'https://cdn.kde.org/ci-builds/games/ktuberling/master/windows/ktuberling-master-862-windows-cl-msvc2022-x86_64.7z'
-        & 'C:\Program Files\7-zip\7z.exe' x -o'Desktop\homembatata' 'ktuberling-master-862-windows-cl-msvc2022-x86_64.7z'
-        Remove-Item -Path 'ktuberling-master-857-windows-cl-msvc2022-x86_64.7z'
-        $TargetFile = "$env:UserProfile\Desktop\homembatata\bin\ktuberling.exe"
-        $ShortcutFile = 'Desktop\Homem Batata.lnk'
+    - ansible.windows.win_stat:
+        path: C:\Program Files\7-Zip\7z.exe
+      register: seven_zip_binary
+
+    - ansible.builtin.fail:
+        msg: 7-Zip nao encontrado em C:\Program Files\7-Zip\7z.exe.
+      when: not seven_zip_binary.stat.exists
+
+    - ansible.windows.win_stat:
+        path: C:\Users\User\Desktop\homembatata\bin\ktuberling.exe
+      register: ktuberling_binary
+
+    - ansible.windows.win_get_url:
+        url: https://cdn.kde.org/ci-builds/games/ktuberling/master/windows/ktuberling-master-862-windows-cl-msvc2022-x86_64.7z
+        dest: C:\Windows\Temp\ktuberling-master-862-windows-cl-msvc2022-x86_64.7z
+      when: not ktuberling_binary.stat.exists
+
+    - ansible.windows.win_file:
+        path: C:\Users\User\Desktop\homembatata
+        state: directory
+      when: not ktuberling_binary.stat.exists
+
+    - ansible.windows.win_command: >-
+        C:\Program Files\7-Zip\7z.exe
+        x
+        -aoa
+        -oC:\Users\User\Desktop\homembatata
+        C:\Windows\Temp\ktuberling-master-862-windows-cl-msvc2022-x86_64.7z
+      args:
+        creates: C:\Users\User\Desktop\homembatata\bin\ktuberling.exe
+      when: not ktuberling_binary.stat.exists
+
+    - ansible.windows.win_file:
+        path: C:\Windows\Temp\ktuberling-master-862-windows-cl-msvc2022-x86_64.7z
+        state: absent
+      when: not ktuberling_binary.stat.exists
+
+    - ansible.windows.win_shell: |
+        $TargetFile = "C:\Users\User\Desktop\homembatata\bin\ktuberling.exe"
+        $ShortcutFile = "C:\Users\User\Desktop\Homem Batata.lnk"
         $WScriptShell = New-Object -ComObject WScript.Shell
         $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
         $Shortcut.TargetPath = $TargetFile
         $Shortcut.Save()
+      args:
+        creates: C:\Users\User\Desktop\Homem Batata.lnk
