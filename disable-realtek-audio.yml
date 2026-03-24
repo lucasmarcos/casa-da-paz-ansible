@@ -1,5 +1,15 @@
 - hosts: paz
   gather_facts: no
   tasks:
-    - win_shell: |
-        Get-PnpDevice | Where-Object { $_.FriendlyName -Like 'Realtek(R) Audio' } | Disable-PnpDevice -Confirm:$False
+    - ansible.windows.win_shell: |
+        $device = Get-PnpDevice -Class Media | Where-Object {
+          $_.FriendlyName -match 'Realtek' -or
+          $_.InstanceId -match '^HDAUDIO\\FUNC_01&VEN_10EC'
+        } | Select-Object -First 1
+
+        if (-not $device) {
+          Write-Error 'Nenhum dispositivo de audio Realtek foi encontrado.'
+          exit 1
+        }
+
+        pnputil /disable-device "$($device.InstanceId)"
