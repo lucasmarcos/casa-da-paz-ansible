@@ -3,6 +3,7 @@
   vars:
     mcpaz_dir: C:\Users\User\Desktop\mcpaz
     mcpaz_temp_dir: C:\Windows\Temp\mcpaz
+    mcpaz_mc_backup_dir: C:\Windows\Temp\mcpaz-mc-backup
     node_version: 25.8.2
     node_zip_name: node-v{{ node_version }}-win-x64.zip
     node_dist_dir: node-v{{ node_version }}-win-x64
@@ -10,11 +11,29 @@
     node_zip_path: '{{ mcpaz_temp_dir }}\{{ node_zip_name }}'
   tasks:
     - ansible.windows.win_file:
-        path: '{{ mcpaz_dir }}'
+        path: '{{ mcpaz_temp_dir }}'
         state: directory
 
+    - ansible.windows.win_stat:
+        path: '{{ mcpaz_dir }}\mc'
+      register: existing_mc_dir
+
     - ansible.windows.win_file:
-        path: '{{ mcpaz_temp_dir }}'
+        path: '{{ mcpaz_mc_backup_dir }}'
+        state: absent
+      when: existing_mc_dir.stat.exists
+
+    - ansible.windows.win_command: >-
+        powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
+        -Command "Move-Item -Path '{{ mcpaz_dir }}\mc' -Destination '{{ mcpaz_mc_backup_dir }}'"
+      when: existing_mc_dir.stat.exists
+
+    - ansible.windows.win_file:
+        path: '{{ mcpaz_dir }}'
+        state: absent
+
+    - ansible.windows.win_file:
+        path: '{{ mcpaz_dir }}'
         state: directory
 
     - ansible.windows.win_copy:
@@ -37,13 +56,14 @@
         src: mcpaz/run.bat
         dest: '{{ mcpaz_dir }}\run.bat'
 
+    - ansible.windows.win_command: >-
+        powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
+        -Command "Move-Item -Path '{{ mcpaz_mc_backup_dir }}' -Destination '{{ mcpaz_dir }}\mc'"
+      when: existing_mc_dir.stat.exists
+
     - ansible.windows.win_get_url:
         url: '{{ node_zip_url }}'
         dest: '{{ node_zip_path }}'
-
-    - ansible.windows.win_file:
-        path: '{{ mcpaz_dir }}\node'
-        state: absent
 
     - ansible.windows.win_command: >-
         powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
@@ -66,4 +86,8 @@
 
     - ansible.windows.win_file:
         path: '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}'
+        state: absent
+
+    - ansible.windows.win_file:
+        path: '{{ mcpaz_mc_backup_dir }}'
         state: absent
