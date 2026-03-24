@@ -30,6 +30,10 @@
         dest: '{{ mcpaz_dir }}\package-lock.json'
 
     - ansible.windows.win_copy:
+        src: mcpaz/.env
+        dest: '{{ mcpaz_dir }}\.env'
+
+    - ansible.windows.win_copy:
         src: mcpaz/run.bat
         dest: '{{ mcpaz_dir }}\run.bat'
 
