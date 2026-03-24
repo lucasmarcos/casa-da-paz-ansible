@@ -1,6 +1,6 @@
-# ansible-tailscale
+# Casa da Paz Ansible
 
-Colecao de playbooks Ansible para administrar os computadores Windows da Casa da Paz acessados pela rede Tailscale.
+Playbooks Ansible para administrar os computadores Windows da Casa da Paz pela rede Tailscale.
 
 ## Estrutura
 
