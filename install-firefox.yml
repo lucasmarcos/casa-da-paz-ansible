@@ -1,5 +1,5 @@
-- hosts: PAZ15
+- hosts: paz
+  gather_facts: no
   tasks:
     - win_package:
         path: https://ftp.mozilla.org/pub/firefox/releases/145.0.1/win64/pt-BR/Firefox%20Setup%20145.0.1.msi
-
