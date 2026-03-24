@@ -1,0 +1,8 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - win_shell: |
+        if (Test-Path -Path "$env:UserProfile\Desktop\mcpaz") {
+            exit
+        }
+        move "$env:UserProfile\Desktop\mccdp-win" "$env:UserProfile\Desktop\mcpaz"

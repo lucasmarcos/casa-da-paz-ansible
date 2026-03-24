@@ -1,0 +1,5 @@
+- hosts: paz
+  tasks:
+    - ansible.windows.win_shell: |
+        curl.exe -L -o "$env:TEMP\gcompris-setup.exe" "https://download.kde.org/stable/gcompris/qt/windows/gcompris-qt-26.0-win64-gcc.exe"
+        & "$env:TEMP\gcompris-setup.exe" /S

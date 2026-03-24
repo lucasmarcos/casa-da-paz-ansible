@@ -1,0 +1,5 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - win_shell: |
+        Get-PnpDevice | Where-Object { $_.FriendlyName -Like 'Realtek(R) Audio' } | Disable-PnpDevice -Confirm:$False

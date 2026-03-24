@@ -1,0 +1,12 @@
+- hosts: paz
+  tasks:
+    - name: Verificar versão do Veyon
+      ansible.windows.win_shell: |
+        (Get-ItemProperty "C:\Program Files\Veyon\veyon-service.exe").VersionInfo.FileVersion
+      args:
+        executable: powershell
+      register: veyon_version
+
+    - name: Exibir versão
+      debug:
+        msg: "{{ veyon_version.stdout }}"

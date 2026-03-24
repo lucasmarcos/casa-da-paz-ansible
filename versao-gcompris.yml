@@ -1,0 +1,10 @@
+- hosts: paz
+  tasks:
+    - ansible.windows.win_shell: |
+        (Get-ChildItem "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" |
+          Get-ItemProperty |
+          Where-Object { $_.DisplayName -like "*GCompris*" }).DisplayVersion
+      register: gcompris_version
+
+    - debug:
+        msg: "{{ inventory_hostname }}: {{ gcompris_version.stdout | trim }}"

@@ -1,0 +1,4 @@
+- hosts: paz
+  tasks:
+    - ansible.windows.win_shell: |
+        & "C:\Users\User\gcompris-qt-26.1-win64-gcc.exe" /S

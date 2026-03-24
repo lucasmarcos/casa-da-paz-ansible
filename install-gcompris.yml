@@ -1,0 +1,5 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - win_package:
+        path: https://download.kde.org/stable/gcompris/qt/windows/gcompris-qt-25.1-win64-gcc.msi

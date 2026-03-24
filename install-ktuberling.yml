@@ -1,0 +1,15 @@
+- hosts: paz
+  tasks:
+    - win_shell: |
+        if (Test-Path -Path "$env:UserProfile\Desktop\homembatata") {
+            exit
+        }
+        curl.exe -LO 'https://cdn.kde.org/ci-builds/games/ktuberling/master/windows/ktuberling-master-862-windows-cl-msvc2022-x86_64.7z'
+        & 'C:\Program Files\7-zip\7z.exe' x -o'Desktop\homembatata' 'ktuberling-master-862-windows-cl-msvc2022-x86_64.7z'
+        Remove-Item -Path 'ktuberling-master-857-windows-cl-msvc2022-x86_64.7z'
+        $TargetFile = "$env:UserProfile\Desktop\homembatata\bin\ktuberling.exe"
+        $ShortcutFile = 'Desktop\Homem Batata.lnk'
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+        $Shortcut.TargetPath = $TargetFile
+        $Shortcut.Save()

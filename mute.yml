@@ -1,0 +1,5 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - win_shell: |
+        (New-Object -ComObject WScript.Shell).SendKeys([char]173)

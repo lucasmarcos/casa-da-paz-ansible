@@ -1,0 +1,9 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - win_file:
+        path: 'C:\Program Files\Mozilla Firefox\distribution'
+        state: directory
+    - win_copy:
+        src: policies.json
+        dest: 'C:\Program Files\Mozilla Firefox\distribution\policies.json'

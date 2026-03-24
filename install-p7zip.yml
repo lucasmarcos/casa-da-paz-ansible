@@ -1,0 +1,5 @@
+- hosts: PAZ15
+  gather_facts: no
+  tasks:
+    - win_package:
+        path: https://7-zip.org/a/7z2501-x64.msi
