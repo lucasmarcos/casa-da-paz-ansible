@@ -1,2 +1,5 @@
-node.exe package\dist\corepack.js npm i minecraft-launcher-core
-node.exe --env-file=.env main.js
+@echo off
+cd /d "%~dp0"
+
+call node\npm.cmd install
+node\node.exe --env-file=.env main.js
