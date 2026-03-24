@@ -1,8 +1,14 @@
 - hosts: paz
   gather_facts: no
+  vars:
+    chrome_ntp_shortcuts:
+      - title: Casa da Paz | Lista de Jogos
+        url: https://lucasmarcos.github.io/jogos
+      - title: DuckDuckGo
+        url: https://ddg.gg
   tasks:
     - win_regedit:
         path: HKLM:\SOFTWARE\Policies\Google\Chrome
         name: NTPShortcuts
-        data: '[{"title": "Casa da Paz | Lista de Jogos", "url": "https://lucasmarcos.github.io/jogos"}, {"title": "DuckDuckGo", "url": "https://ddg.gg"}]'
+        data: '{{ chrome_ntp_shortcuts | to_json }}'
         type: string
