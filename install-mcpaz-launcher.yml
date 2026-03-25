@@ -1,6 +1,14 @@
 - hosts: paz
   gather_facts: no
   tasks:
+    - ansible.windows.win_stat:
+        path: '{{ temurin_javaw_path }}'
+      register: temurin_javaw_binary
+
+    - ansible.builtin.fail:
+        msg: Java nao encontrado em {{ temurin_javaw_path }}. Rode install-temurin-jre.yml antes de instalar o mcpaz.
+      when: not temurin_javaw_binary.stat.exists
+
     - ansible.windows.win_file:
         path: '{{ mcpaz_temp_dir }}'
         state: directory
