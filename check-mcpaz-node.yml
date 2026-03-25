@@ -1,0 +1,93 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - name: Verificar arquivos principais do mcpaz
+      ansible.windows.win_shell: |
+        $paths = @(
+          '{{ mcpaz_dir }}',
+          '{{ mcpaz_dir }}\node',
+          '{{ mcpaz_dir }}\node\node.exe',
+          '{{ mcpaz_dir }}\node\npm.cmd',
+          '{{ temurin_javaw_path }}',
+          '{{ mcpaz_dir }}\.env',
+          '{{ mcpaz_dir }}\.env.local',
+          '{{ mcpaz_dir }}\main.js',
+          '{{ mcpaz_dir }}\run.bat'
+        )
+
+        foreach ($path in $paths) {
+          $exists = Test-Path -LiteralPath $path
+          Write-Output "$path`t$exists"
+        }
+      register: mcpaz_paths
+
+    - name: Exibir arquivos principais
+      debug:
+        msg: "{{ mcpaz_paths.stdout_lines }}"
+
+    - name: Verificar bloqueio e ACL do node.exe
+      ansible.windows.win_shell: |
+        $nodePath = '{{ mcpaz_dir }}\node\node.exe'
+
+        if (-not (Test-Path -LiteralPath $nodePath)) {
+          Write-Output 'node.exe nao encontrado'
+          exit 0
+        }
+
+        $zone = Get-Item -LiteralPath $nodePath -Stream Zone.Identifier -ErrorAction SilentlyContinue
+        if ($zone) {
+          Write-Output 'Zone.Identifier: presente'
+          Get-Content -LiteralPath $nodePath -Stream Zone.Identifier
+        } else {
+          Write-Output 'Zone.Identifier: ausente'
+        }
+
+        Write-Output 'ACL:'
+        (Get-Acl -LiteralPath $nodePath).Access | ForEach-Object {
+          "$($_.IdentityReference) | $($_.FileSystemRights) | $($_.AccessControlType)"
+        }
+      register: node_metadata
+
+    - name: Exibir bloqueio e ACL do node.exe
+      debug:
+        msg: "{{ node_metadata.stdout_lines }}"
+
+    - name: Testar execucao do node.exe
+      ansible.windows.win_shell: |
+        & '{{ mcpaz_dir }}\node\node.exe' --version
+      register: node_exec
+      failed_when: false
+
+    - name: Exibir resultado da execucao do node.exe
+      debug:
+        msg:
+          - "rc={{ node_exec.rc }}"
+          - "stdout={{ node_exec.stdout | trim }}"
+          - "stderr={{ node_exec.stderr | trim }}"
+
+    - name: Testar npm.cmd
+      ansible.windows.win_shell: |
+        & '{{ mcpaz_dir }}\node\npm.cmd' --version
+      args:
+        chdir: '{{ mcpaz_dir }}'
+      register: npm_exec
+      failed_when: false
+
+    - name: Exibir resultado do npm.cmd
+      debug:
+        msg:
+          - "rc={{ npm_exec.rc }}"
+          - "stdout={{ npm_exec.stdout | trim }}"
+          - "stderr={{ npm_exec.stderr | trim }}"
+
+    - name: Exibir conteudo do .env.local
+      ansible.windows.win_shell: |
+        if (Test-Path -LiteralPath '{{ mcpaz_dir }}\.env.local') {
+          Get-Content -LiteralPath '{{ mcpaz_dir }}\.env.local'
+        }
+      register: mcpaz_env_local
+      failed_when: false
+
+    - name: Exibir .env.local
+      debug:
+        msg: "{{ mcpaz_env_local.stdout_lines }}"

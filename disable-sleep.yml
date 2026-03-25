@@ -1,0 +1,8 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - name: Desabilitar sleep na tomada
+      ansible.windows.win_command: powercfg /change standby-timeout-ac 0
+
+    - name: Desabilitar sleep na bateria
+      ansible.windows.win_command: powercfg /change standby-timeout-dc 0

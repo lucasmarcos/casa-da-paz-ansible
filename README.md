@@ -12,6 +12,7 @@ Playbooks Ansible para administrar os computadores Windows da Casa da Paz pela r
 ## Playbooks
 
 - `install-firefox.yml`: instala Firefox
+- `install-pwsh.yml`: instala ou atualiza PowerShell 7 a partir de um MSI fixo
 - `configure-firefox-policies.yml`: aplica politicas do Firefox
 - `install-p7zip.yml`: instala 7-Zip
 - `install-gcompris.yml`: instala GCompris com versao parametrizavel
@@ -19,12 +20,16 @@ Playbooks Ansible para administrar os computadores Windows da Casa da Paz pela r
 - `install-mcpaz-launcher.yml`: instala o launcher `mcpaz`, baixa o Node e instala as dependencias npm
 - `install-temurin-jre.yml`: instala o Temurin JRE 25 para Windows x64
 - `check-gcompris-version.yml`: verifica a versao do GCompris
+- `check-mcpaz-node.yml`: diagnostica existencia, bloqueio, permissoes e execucao do Node usado pelo mcpaz
+- `check-pwsh-version.yml`: verifica a versao do PowerShell 7 (`pwsh`)
 - `install-ktuberling.yml`: instala Ktuberling
 - `install-veyon.yml`: instala Veyon
 - `check-veyon-version.yml`: verifica a versao do Veyon
 - `disable-touchscreen.yml`: desabilita touch screen
 - `enable-touchscreen.yml`: habilita touch screen
 - `disable-realtek-audio.yml`: desabilita audio Realtek
+- `disable-sleep.yml`: desabilita sleep na tomada e na bateria
+- `enable-sleep.yml`: reabilita sleep com os timeouts configurados em `group_vars/paz.yml`
 - `mute-volume.yml`: silencia o volume
 - `set-shortcuts.yml`: define atalhos na pagina Nova guia do Chrome usando a politica `NTPShortcuts`
 - `rename-mccdp-folder.yml`: renomeia pasta na area de trabalho

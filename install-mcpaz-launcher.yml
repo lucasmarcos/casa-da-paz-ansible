@@ -68,9 +68,16 @@
         dest: '{{ node_zip_path }}'
 
     - ansible.windows.win_shell: |
+        Unblock-File -LiteralPath '{{ node_zip_path }}'
+
+    - ansible.windows.win_shell: |
         Expand-Archive -LiteralPath '{{ node_zip_path }}' -DestinationPath '{{ mcpaz_temp_dir }}' -Force
       args:
         creates: '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}\node.exe'
+
+    - ansible.windows.win_shell: |
+        Get-ChildItem -LiteralPath '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}' -Recurse -File |
+          Unblock-File
 
     - ansible.windows.win_shell: |
         Move-Item -Path '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}' -Destination '{{ mcpaz_dir }}\node'

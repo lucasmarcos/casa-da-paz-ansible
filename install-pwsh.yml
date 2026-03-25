@@ -1,0 +1,17 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - name: Baixar instalador do PowerShell
+      ansible.windows.win_get_url:
+        url: '{{ pwsh_installer_url }}'
+        dest: '{{ pwsh_installer_path }}'
+
+    - name: Instalar PowerShell
+      ansible.windows.win_package:
+        path: '{{ pwsh_installer_path }}'
+        state: present
+
+    - name: Remover instalador do PowerShell
+      ansible.windows.win_file:
+        path: '{{ pwsh_installer_path }}'
+        state: absent
