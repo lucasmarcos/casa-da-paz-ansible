@@ -2,14 +2,14 @@
   gather_facts: no
   tasks:
     - ansible.windows.win_get_url:
-        url: https://github.com/veyon/veyon/releases/download/v4.10.1/veyon-4.10.1.0-win64-setup.exe
-        dest: C:\Windows\Temp\veyon-4.10.1.0-win64-setup.exe
+        url: '{{ veyon_installer_url }}'
+        dest: '{{ veyon_installer_path }}'
 
     - ansible.windows.win_package:
-        path: C:\Windows\Temp\veyon-4.10.1.0-win64-setup.exe
+        path: '{{ veyon_installer_path }}'
         arguments: /S /NoMaster
         state: present
 
     - ansible.windows.win_file:
-        path: C:\Windows\Temp\veyon-4.10.1.0-win64-setup.exe
+        path: '{{ veyon_installer_path }}'
         state: absent

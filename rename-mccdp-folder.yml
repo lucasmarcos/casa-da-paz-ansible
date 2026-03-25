@@ -2,22 +2,22 @@
   gather_facts: no
   tasks:
     - ansible.windows.win_stat:
-        path: C:\Users\User\Desktop\mcpaz
+        path: '{{ mcpaz_desktop_dir }}'
       register: mcpaz_folder
 
     - ansible.windows.win_stat:
-        path: C:\Users\User\Desktop\mccdp-win
+        path: '{{ mccdp_old_dir }}'
       register: mccdp_folder
 
     - ansible.builtin.fail:
-        msg: Pasta C:\Users\User\Desktop\mccdp-win nao encontrada para renomear.
+        msg: Pasta {{ mccdp_old_dir }} nao encontrada para renomear.
       when:
         - not mcpaz_folder.stat.exists
         - not mccdp_folder.stat.exists
 
     - ansible.windows.win_command: >-
         powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
-        -Command "Rename-Item -Path 'C:\Users\User\Desktop\mccdp-win' -NewName 'mcpaz'"
+        -Command "Rename-Item -Path '{{ mccdp_old_dir }}' -NewName 'mcpaz'"
       when:
         - not mcpaz_folder.stat.exists
         - mccdp_folder.stat.exists

@@ -5,6 +5,7 @@ Playbooks Ansible para administrar os computadores Windows da Casa da Paz pela r
 ## Estrutura
 
 - `hosts.ini`: inventario com as maquinas da Casa da Paz no grupo `paz`
+- `group_vars/paz.yml`: variaveis padrao do grupo `paz`, incluindo conexao Ansible, caminhos e versoes/URLs de instaladores
 - `policies.json`: politicas do Firefox usadas por `configure-firefox-policies.yml`
 - `TODO.md`: pendencias operacionais
 
@@ -25,8 +26,33 @@ Playbooks Ansible para administrar os computadores Windows da Casa da Paz pela r
 - `enable-touchscreen.yml`: habilita touch screen
 - `disable-realtek-audio.yml`: desabilita audio Realtek
 - `mute-volume.yml`: silencia o volume
-- `set-shortcuts.yml`: define atalhos/paginas no Chrome
+- `set-shortcuts.yml`: define atalhos na pagina Nova guia do Chrome usando a politica `NTPShortcuts`
 - `rename-mccdp-folder.yml`: renomeia pasta na area de trabalho
+
+## Variaveis por grupo e host
+
+O playbook `set-shortcuts.yml` le `chrome_ntp_shortcuts` do inventario.
+
+Valor padrao do grupo:
+
+- `group_vars/paz.yml`
+
+As variaveis de conexao Ansible do grupo `paz` tambem ficam em `group_vars/paz.yml`.
+Outros playbooks tambem leem dali caminhos padrao, versoes e URLs de instaladores.
+
+Para sobrescrever em uma maquina especifica, crie um arquivo como:
+
+- `host_vars/PAZ11.yml`
+
+Exemplo:
+
+```yaml
+chrome_ntp_shortcuts:
+  - name: Casa da Paz | Lista de Jogos
+    url: https://lucasmarcos.github.io/jogos
+  - name: Khan Academy
+    url: https://pt.khanacademy.org/
+```
 
 ## Uso
 

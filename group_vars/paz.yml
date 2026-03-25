@@ -1,0 +1,48 @@
+ansible_user: User
+ansible_connection: ssh
+ansible_shell_type: powershell
+
+windows_temp_dir: C:\Windows\Temp
+desktop_dir: C:\Users\User\Desktop
+
+chrome_ntp_shortcuts:
+  - name: Casa da Paz | Lista de Jogos
+    url: https://lucasmarcos.github.io/jogos
+  - name: DuckDuckGo
+    url: https://ddg.gg
+
+firefox_version: 145.0.1
+firefox_installer_url: https://ftp.mozilla.org/pub/firefox/releases/{{ firefox_version }}/win64/pt-BR/Firefox%20Setup%20{{ firefox_version }}.msi
+firefox_distribution_dir: C:\Program Files\Mozilla Firefox\distribution
+
+gcompris_version: "26.1"
+gcompris_installer_url: https://download.kde.org/stable/gcompris/qt/windows/gcompris-qt-{{ gcompris_version }}-win64-gcc.msi
+gcompris_installer_path: '{{ windows_temp_dir }}\gcompris-qt-{{ gcompris_version }}-win64-gcc.msi'
+gcompris_local_exe_path: C:\Users\User\gcompris-qt-26.1-win64-gcc.exe
+
+seven_zip_installer_url: https://7-zip.org/a/7z2501-x64.msi
+seven_zip_binary_path: C:\Program Files\7-Zip\7z.exe
+
+ktuberling_install_dir: '{{ desktop_dir }}\homembatata'
+ktuberling_binary_path: '{{ ktuberling_install_dir }}\bin\ktuberling.exe'
+ktuberling_archive_url: https://cdn.kde.org/ci-builds/games/ktuberling/master/windows/ktuberling-master-862-windows-cl-msvc2022-x86_64.7z
+ktuberling_archive_path: '{{ windows_temp_dir }}\ktuberling-master-862-windows-cl-msvc2022-x86_64.7z'
+ktuberling_shortcut_path: '{{ desktop_dir }}\Homem Batata.lnk'
+
+mcpaz_dir: '{{ desktop_dir }}\mcpaz'
+mcpaz_temp_dir: '{{ windows_temp_dir }}\mcpaz'
+mcpaz_mc_backup_dir: '{{ windows_temp_dir }}\mcpaz-mc-backup'
+node_version: 25.8.2
+node_zip_name: node-v{{ node_version }}-win-x64.zip
+node_dist_dir: node-v{{ node_version }}-win-x64
+node_zip_url: https://nodejs.org/download/release/v{{ node_version }}/{{ node_zip_name }}
+node_zip_path: '{{ mcpaz_temp_dir }}\{{ node_zip_name }}'
+
+temurin_jre_url: https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.2%2B10/OpenJDK25U-jre_x64_windows_hotspot_25.0.2_10.msi
+
+veyon_version: 4.10.1.0
+veyon_installer_url: https://github.com/veyon/veyon/releases/download/v4.10.1/veyon-{{ veyon_version }}-win64-setup.exe
+veyon_installer_path: '{{ windows_temp_dir }}\veyon-{{ veyon_version }}-win64-setup.exe'
+
+mccdp_old_dir: '{{ desktop_dir }}\mccdp-win'
+mcpaz_desktop_dir: '{{ desktop_dir }}\mcpaz'

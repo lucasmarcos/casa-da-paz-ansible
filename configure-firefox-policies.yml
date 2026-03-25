@@ -2,8 +2,8 @@
   gather_facts: no
   tasks:
     - win_file:
-        path: 'C:\Program Files\Mozilla Firefox\distribution'
+        path: '{{ firefox_distribution_dir }}'
         state: directory
     - win_copy:
         src: policies.json
-        dest: 'C:\Program Files\Mozilla Firefox\distribution\policies.json'
+        dest: '{{ firefox_distribution_dir }}\policies.json'

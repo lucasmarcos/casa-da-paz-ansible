@@ -1,9 +1,5 @@
 - hosts: paz
   gather_facts: no
-  vars:
-    gcompris_version: "26.1"
-    gcompris_installer_url: https://download.kde.org/stable/gcompris/qt/windows/gcompris-qt-{{ gcompris_version }}-win64-gcc.msi
-    gcompris_installer_path: C:\Windows\Temp\gcompris-qt-{{ gcompris_version }}-win64-gcc.msi
   tasks:
     - ansible.windows.win_get_url:
         url: '{{ gcompris_installer_url }}'
