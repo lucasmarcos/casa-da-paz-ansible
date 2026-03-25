@@ -38,7 +38,11 @@ node_dist_dir: node-v{{ node_version }}-win-x64
 node_zip_url: https://nodejs.org/download/release/v{{ node_version }}/{{ node_zip_name }}
 node_zip_path: '{{ mcpaz_temp_dir }}\{{ node_zip_name }}'
 
-temurin_jre_url: https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.2%2B10/OpenJDK25U-jre_x64_windows_hotspot_25.0.2_10.msi
+temurin_jre_version: 25.0.2_10
+temurin_jre_url: https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.2%2B10/OpenJDK25U-jre_x64_windows_hotspot_{{ temurin_jre_version }}.msi
+temurin_jre_install_dir: C:\Program Files\Eclipse Adoptium\jre-25.0.2.10-hotspot
+temurin_java_path: '{{ temurin_jre_install_dir }}\bin\java.exe'
+temurin_javaw_path: '{{ temurin_jre_install_dir }}\bin\javaw.exe'
 
 veyon_version: 4.10.1.0
 veyon_installer_url: https://github.com/veyon/veyon/releases/download/v4.10.1/veyon-{{ veyon_version }}-win64-setup.exe

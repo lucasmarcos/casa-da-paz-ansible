@@ -32,6 +32,11 @@ function readLocalEnv() {
   return entries;
 }
 
+function writeLocalEnv(entries) {
+  const lines = Object.entries(entries).map(([key, value]) => `${key}=${value}`);
+  writeFileSync(localEnvPath, `${lines.join("\n")}\n`, "utf8");
+}
+
 const localEnv = readLocalEnv();
 
 let uuid;
@@ -59,9 +64,14 @@ if (!process.env.MC_NAME) {
 }
 
 const version = process.env.MC_VERSION || "26.1";
+const javaPath = process.env.JAVA_PATH || localEnv.JAVA_PATH;
 
 if (localEnv.MC_UUID !== uuid || localEnv.MC_NAME !== name) {
-  writeFileSync(localEnvPath, `MC_UUID=${uuid}\nMC_NAME=${name}\n`, "utf8");
+  writeLocalEnv({
+    ...localEnv,
+    MC_UUID: uuid,
+    MC_NAME: name,
+  });
 }
 
 const opts = {
@@ -79,6 +89,10 @@ const opts = {
     min: "2G",
   },
 };
+
+if (javaPath) {
+  opts.javaPath = javaPath;
+}
 
 launcher.launch(opts);
 

@@ -3,4 +3,5 @@
   tasks:
     - ansible.windows.win_package:
         path: '{{ temurin_jre_url }}'
+        arguments: ADDLOCAL=FeatureMain,FeatureEnvironment,FeatureJavaHome,FeatureOracleJavaSoft /quiet
         state: present

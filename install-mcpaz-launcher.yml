@@ -43,6 +43,11 @@
         dest: '{{ mcpaz_dir }}\.env'
 
     - ansible.windows.win_copy:
+        content: |
+          JAVA_PATH={{ temurin_javaw_path }}
+        dest: '{{ mcpaz_dir }}\.env.local'
+
+    - ansible.windows.win_copy:
         src: mcpaz/run.bat
         dest: '{{ mcpaz_dir }}\run.bat'
 
