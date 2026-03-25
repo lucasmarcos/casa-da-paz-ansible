@@ -1,0 +1,42 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - name: Verificar Chrome em Program Files
+      ansible.windows.win_stat:
+        path: '{{ chrome_program_files_path }}'
+      register: chrome_program_files
+
+    - name: Verificar Chrome em Program Files x86
+      ansible.windows.win_stat:
+        path: '{{ chrome_program_files_x86_path }}'
+      register: chrome_program_files_x86
+
+    - name: Falhar se o Google Chrome nao estiver instalado
+      ansible.builtin.fail:
+        msg: Google Chrome nao encontrado em {{ chrome_program_files_path }} nem em {{ chrome_program_files_x86_path }}.
+      when:
+        - not chrome_program_files.stat.exists
+        - not chrome_program_files_x86.stat.exists
+
+    - name: Copiar arquivo de associacoes padrao do Chrome
+      ansible.windows.win_copy:
+        dest: '{{ chrome_default_associations_path }}'
+        content: |
+          <?xml version="1.0" encoding="UTF-8"?>
+          <DefaultAssociations>
+            <Association Identifier=".htm" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
+            <Association Identifier=".html" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
+            <Association Identifier="http" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
+            <Association Identifier="https" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
+          </DefaultAssociations>
+
+    - name: Configurar policy de associacoes padrao do Windows
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\System
+        name: DefaultAssociationsConfiguration
+        data: '{{ chrome_default_associations_path }}'
+        type: string
+
+    - name: Importar associacoes padrao no Windows
+      ansible.windows.win_command: >-
+        Dism.exe /Online /Import-DefaultAppAssociations:{{ chrome_default_associations_path }}

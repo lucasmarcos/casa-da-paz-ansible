@@ -108,6 +108,12 @@
       args:
         chdir: '{{ mcpaz_dir }}'
 
+    - name: Conceder permissao de escrita e execucao para Users no mcpaz
+      ansible.windows.win_shell: |
+        icacls '{{ mcpaz_dir }}' /grant '*S-1-5-32-545:(OI)(CI)M' /T /C
+      args:
+        chdir: '{{ mcpaz_dir }}'
+
     - name: Remover zip temporario do Node.js
       ansible.windows.win_file:
         path: '{{ node_zip_path }}'

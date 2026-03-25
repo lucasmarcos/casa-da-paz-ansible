@@ -6,6 +6,9 @@ windows_temp_dir: C:\Windows\Temp
 desktop_dir: C:\Users\User\Desktop
 sleep_timeout_ac_minutes: 30
 sleep_timeout_dc_minutes: 15
+chrome_program_files_path: C:\Program Files\Google\Chrome\Application\chrome.exe
+chrome_program_files_x86_path: C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+chrome_default_associations_path: '{{ windows_temp_dir }}\default-associations-chrome.xml'
 
 pwsh_version: 7.6.0
 pwsh_installer_url: https://github.com/PowerShell/PowerShell/releases/download/v{{ pwsh_version }}/PowerShell-{{ pwsh_version }}-win-x64.msi

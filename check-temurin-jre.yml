@@ -1,0 +1,17 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - name: Verificar se o javaw.exe do Temurin existe
+      ansible.windows.win_stat:
+        path: '{{ temurin_javaw_path }}'
+      register: temurin_javaw_binary
+
+    - name: Exibir status do JRE
+      debug:
+        msg: >-
+          {{ inventory_hostname }}:
+          {{
+            'instalado em ' ~ temurin_javaw_path
+            if temurin_javaw_binary.stat.exists
+            else 'nao instalado'
+          }}

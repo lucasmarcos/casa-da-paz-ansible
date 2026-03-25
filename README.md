@@ -20,8 +20,11 @@ Playbooks Ansible para administrar os computadores Windows da Casa da Paz pela r
 - `install-mcpaz-launcher.yml`: instala o launcher `mcpaz`, baixa o Node e instala as dependencias npm
 - `install-temurin-jre.yml`: instala o Temurin JRE 25 para Windows x64
 - `check-gcompris-version.yml`: verifica a versao do GCompris
+- `check-battery-level.yml`: verifica o nivel de bateria e o estado de carga
+- `check-default-browser.yml`: verifica o navegador padrao do usuario atual
 - `check-mcpaz-node.yml`: diagnostica existencia, bloqueio, permissoes e execucao do Node usado pelo mcpaz
 - `check-pwsh-version.yml`: verifica a versao do PowerShell 7 (`pwsh`)
+- `check-temurin-jre.yml`: verifica se o JRE do Temurin esta instalado
 - `install-ktuberling.yml`: instala Ktuberling
 - `install-veyon.yml`: instala Veyon
 - `check-veyon-version.yml`: verifica a versao do Veyon
@@ -32,6 +35,7 @@ Playbooks Ansible para administrar os computadores Windows da Casa da Paz pela r
 - `enable-sleep.yml`: reabilita sleep com os timeouts configurados em `group_vars/paz.yml`
 - `mute-volume.yml`: silencia o volume
 - `set-shortcuts.yml`: define atalhos na pagina Nova guia do Chrome usando a politica `NTPShortcuts`
+- `set-chrome-default-browser.yml`: define o Google Chrome como navegador padrao via associacoes padrao do Windows
 - `rename-mccdp-folder.yml`: renomeia pasta na area de trabalho
 
 ## Variaveis por grupo e host

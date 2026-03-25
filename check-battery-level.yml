@@ -1,0 +1,37 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - name: Consultar nivel de bateria
+      ansible.windows.win_shell: |
+        $battery = Get-CimInstance -ClassName Win32_Battery -ErrorAction SilentlyContinue | Select-Object -First 1
+
+        if (-not $battery) {
+          Write-Output 'sem bateria'
+          exit 0
+        }
+
+        $statusMap = @{
+          1 = 'discharging'
+          2 = 'ac'
+          3 = 'fully charged'
+          4 = 'low'
+          5 = 'critical'
+          6 = 'charging'
+          7 = 'charging high'
+          8 = 'charging low'
+          9 = 'charging critical'
+          10 = 'undefined'
+          11 = 'partially charged'
+        }
+
+        $status = $statusMap[[int]$battery.BatteryStatus]
+        if (-not $status) {
+          $status = "status-$($battery.BatteryStatus)"
+        }
+
+        Write-Output "$($battery.EstimatedChargeRemaining)% | $status"
+      register: battery_level
+
+    - name: Exibir nivel de bateria
+      debug:
+        msg: "{{ inventory_hostname }}: {{ battery_level.stdout | trim }}"

@@ -1,0 +1,33 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - name: Consultar navegador padrao do usuario atual
+      ansible.windows.win_shell: |
+        $userChoicePath = 'HKCU:\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice'
+
+        if (-not (Test-Path -LiteralPath $userChoicePath)) {
+          Write-Output 'navegador padrao nao encontrado'
+          exit 0
+        }
+
+        $progId = (Get-ItemProperty -LiteralPath $userChoicePath).ProgId
+        $friendlyMap = @{
+          'ChromeHTML' = 'Google Chrome'
+          'FirefoxURL' = 'Mozilla Firefox'
+          'MSEdgeHTM' = 'Microsoft Edge'
+          'IE.HTTP' = 'Internet Explorer'
+          'OperaStable' = 'Opera'
+          'BraveHTML' = 'Brave'
+        }
+
+        $browserName = $friendlyMap[$progId]
+        if (-not $browserName) {
+          $browserName = $progId
+        }
+
+        Write-Output "$browserName | $progId"
+      register: default_browser
+
+    - name: Exibir navegador padrao
+      debug:
+        msg: "{{ inventory_hostname }}: {{ default_browser.stdout | trim }}"
