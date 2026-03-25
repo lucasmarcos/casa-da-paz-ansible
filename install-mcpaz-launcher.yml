@@ -1,100 +1,124 @@
 - hosts: paz
   gather_facts: no
   tasks:
-    - ansible.windows.win_stat:
+    - name: Verificar se o javaw do Temurin existe
+      ansible.windows.win_stat:
         path: '{{ temurin_javaw_path }}'
       register: temurin_javaw_binary
 
-    - ansible.builtin.fail:
+    - name: Falhar se o Java nao estiver instalado
+      ansible.builtin.fail:
         msg: Java nao encontrado em {{ temurin_javaw_path }}. Rode install-temurin-jre.yml antes de instalar o mcpaz.
       when: not temurin_javaw_binary.stat.exists
 
-    - ansible.windows.win_file:
+    - name: Criar diretorio temporario do mcpaz
+      ansible.windows.win_file:
         path: '{{ mcpaz_temp_dir }}'
         state: directory
 
-    - ansible.windows.win_stat:
+    - name: Verificar se a pasta mc existente precisa ser preservada
+      ansible.windows.win_stat:
         path: '{{ mcpaz_dir }}\mc'
       register: existing_mc_dir
 
-    - ansible.windows.win_file:
+    - name: Remover backup temporario antigo da pasta mc
+      ansible.windows.win_file:
         path: '{{ mcpaz_mc_backup_dir }}'
         state: absent
       when: existing_mc_dir.stat.exists
 
-    - ansible.windows.win_shell: |
+    - name: Mover pasta mc atual para backup temporario
+      ansible.windows.win_shell: |
         Move-Item -Path '{{ mcpaz_dir }}\mc' -Destination '{{ mcpaz_mc_backup_dir }}'
       when: existing_mc_dir.stat.exists
 
-    - ansible.windows.win_file:
+    - name: Remover diretorio atual do mcpaz
+      ansible.windows.win_file:
         path: '{{ mcpaz_dir }}'
         state: absent
 
-    - ansible.windows.win_file:
+    - name: Criar diretorio do mcpaz
+      ansible.windows.win_file:
         path: '{{ mcpaz_dir }}'
         state: directory
 
-    - ansible.windows.win_copy:
+    - name: Copiar main.js do mcpaz
+      ansible.windows.win_copy:
         src: mcpaz/main.js
         dest: '{{ mcpaz_dir }}\main.js'
 
-    - ansible.windows.win_copy:
+    - name: Copiar package.json do mcpaz
+      ansible.windows.win_copy:
         src: mcpaz/package.json
         dest: '{{ mcpaz_dir }}\package.json'
 
-    - ansible.windows.win_copy:
+    - name: Copiar package-lock.json do mcpaz
+      ansible.windows.win_copy:
         src: mcpaz/package-lock.json
         dest: '{{ mcpaz_dir }}\package-lock.json'
 
-    - ansible.windows.win_copy:
+    - name: Copiar arquivo .env padrao do mcpaz
+      ansible.windows.win_copy:
         src: mcpaz/.env
         dest: '{{ mcpaz_dir }}\.env'
 
-    - ansible.windows.win_copy:
+    - name: Escrever arquivo .env.local com o caminho do Java
+      ansible.windows.win_copy:
         content: |
           JAVA_PATH={{ temurin_javaw_path }}
         dest: '{{ mcpaz_dir }}\.env.local'
 
-    - ansible.windows.win_copy:
+    - name: Copiar script run.bat do mcpaz
+      ansible.windows.win_copy:
         src: mcpaz/run.bat
         dest: '{{ mcpaz_dir }}\run.bat'
 
-    - ansible.windows.win_shell: |
+    - name: Restaurar pasta mc preservada
+      ansible.windows.win_shell: |
         Move-Item -Path '{{ mcpaz_mc_backup_dir }}' -Destination '{{ mcpaz_dir }}\mc'
       when: existing_mc_dir.stat.exists
 
-    - ansible.windows.win_get_url:
+    - name: Baixar Node.js em zip
+      ansible.windows.win_get_url:
         url: '{{ node_zip_url }}'
         dest: '{{ node_zip_path }}'
 
-    - ansible.windows.win_shell: |
+    - name: Desbloquear zip do Node.js
+      ansible.windows.win_shell: |
         Unblock-File -LiteralPath '{{ node_zip_path }}'
 
-    - ansible.windows.win_shell: |
+    - name: Extrair Node.js
+      ansible.windows.win_shell: |
         Expand-Archive -LiteralPath '{{ node_zip_path }}' -DestinationPath '{{ mcpaz_temp_dir }}' -Force
       args:
         creates: '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}\node.exe'
 
-    - ansible.windows.win_shell: |
+    - name: Desbloquear arquivos extraidos do Node.js
+      ansible.windows.win_shell: |
         Get-ChildItem -LiteralPath '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}' -Recurse -File |
           Unblock-File
 
-    - ansible.windows.win_shell: |
+    - name: Mover Node.js para o diretorio do mcpaz
+      ansible.windows.win_shell: |
         Move-Item -Path '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}' -Destination '{{ mcpaz_dir }}\node'
 
-    - ansible.windows.win_command: >-
+    - name: Instalar dependencias npm do mcpaz
+      ansible.windows.win_command: >-
         {{ mcpaz_dir }}\node\npm.cmd install
       args:
         chdir: '{{ mcpaz_dir }}'
 
-    - ansible.windows.win_file:
+    - name: Remover zip temporario do Node.js
+      ansible.windows.win_file:
         path: '{{ node_zip_path }}'
         state: absent
 
-    - ansible.windows.win_file:
+    - name: Remover diretorio temporario extraido do Node.js
+      ansible.windows.win_file:
         path: '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}'
         state: absent
 
-    - ansible.windows.win_file:
+    - name: Remover backup temporario da pasta mc
+      ansible.windows.win_file:
         path: '{{ mcpaz_mc_backup_dir }}'
         state: absent
