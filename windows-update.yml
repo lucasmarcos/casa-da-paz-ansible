@@ -1,0 +1,61 @@
+---
+- name: Atualizar Windows Update completamente
+  hosts: windows
+  gather_facts: true
+  vars:
+    win_updates_category_names:
+      - CriticalUpdates
+      - SecurityUpdates
+      - UpdateRollups
+      - Updates
+      - DefinitionUpdates
+      - ServicePacks
+    win_update_reboot: true
+    win_update_reboot_timeout: 3600
+
+  tasks:
+    - name: Verificar atualizações disponíveis
+      ansible.windows.win_shell: |
+        $UpdateSession = New-Object -ComObject Microsoft.Update.Session
+        $UpdateSearcher = $UpdateSession.CreateUpdateSearcher()
+        $SearchResult = $UpdateSearcher.Search("IsInstalled=0 and Type='Software'")
+        $SearchResult.Updates | ForEach-Object {
+          Write-Output "KB: $($_.KbArticleIDs -join ', ') - $($_.Title)"
+        }
+        Write-Output "TOTAL: $($SearchResult.Updates.Count)"
+      register: pending_updates
+
+    - name: Exibir atualizações pendentes
+      ansible.builtin.debug:
+        msg: "{{ pending_updates.stdout_lines }}"
+
+    - name: Baixar e instalar todas as atualizações
+      ansible.windows.win_updates:
+        category_names: "{{ win_updates_category_names }}"
+        reboot: "{{ win_update_reboot }}"
+        reboot_timeout: "{{ win_update_reboot_timeout }}"
+        log_path: C:\Windows\Temp\windows_update.log
+      register: update_result
+
+    - name: Exibir resultado da instalação
+      ansible.builtin.debug:
+        msg: |
+          Atualizações encontradas: {{ update_result.found_update_count }}
+          Atualizações instaladas: {{ update_result.installed_update_count }}
+          Reboot necessário: {{ update_result.reboot_required }}
+
+    - name: Verificar histórico de atualizações instaladas
+      ansible.windows.win_shell: |
+        $UpdateSession = New-Object -ComObject Microsoft.Update.Session
+        $UpdateSearcher = $UpdateSession.CreateUpdateSearcher()
+        $HistoryCount = $UpdateSearcher.GetTotalHistoryCount()
+        $UpdateSearcher.QueryHistory(0, 10) | ForEach-Object {
+          Write-Output "$($_.Date) - $($_.Title)"
+        }
+      register: install_history
+      when: update_result.installed_update_count | int > 0
+
+    - name: Exibir histórico de instalações
+      ansible.builtin.debug:
+        msg: "{{ install_history.stdout_lines }}"
+      when: update_result.installed_update_count | int > 0
