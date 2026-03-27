@@ -125,7 +125,7 @@
         icacls '{{ mcpaz_dir }}' /grant '*S-1-5-32-545:(OI)(CI)M' /T /C
       args:
         chdir: '{{ mcpaz_dir }}'
-      when: mcpaz_files.changed or not node_modules_dir.stat.exists or not existing_node_binary.stat.exists or existing_node_version.stdout | trim != 'v{{ node_version }}'
+      when: mcpaz_files.changed or not node_modules_dir.stat.exists or not existing_node_binary.stat.exists or (existing_node_version.stdout | trim) != 'v' + node_version
 
     - name: Remover zip temporario do Node.js
       ansible.windows.win_file:
