@@ -1,17 +1,32 @@
 - hosts: paz
   gather_facts: no
+  vars:
+    pwsh_version: 7.6.0
+    pwsh_url: https://github.com/PowerShell/PowerShell/releases/download/v{{ pwsh_version }}/PowerShell-{{ pwsh_version }}-win-x64.msi
+    pwsh_path: C:\Windows\Temp\pwsh7.msi
+
   tasks:
-    - name: Baixar instalador do PowerShell
-      ansible.windows.win_get_url:
-        url: '{{ pwsh_installer_url }}'
-        dest: '{{ pwsh_installer_path }}'
+    - name: Download PowerShell
+      ansible.windows.win_shell:
+        powershell -Command "Invoke-WebRequest -Uri '{{ pwsh_url }}' -OutFile '{{ pwsh_path }}'"
 
-    - name: Instalar PowerShell
-      ansible.windows.win_package:
-        path: '{{ pwsh_installer_path }}'
-        state: present
+    - name: Install PowerShell
+      ansible.windows.win_shell:
+        cmd /c msiexec.exe /i {{ pwsh_path }} /quiet /norestart
 
-    - name: Remover instalador do PowerShell
-      ansible.windows.win_file:
-        path: '{{ pwsh_installer_path }}'
-        state: absent
+    - name: Wait for installation
+      ansible.windows.win_wait_for:
+        timeout: 120
+
+    - name: Remove installer
+      ansible.windows.win_shell:
+        cmd /c del "{{ pwsh_path }}"
+
+    - name: Check version
+      ansible.windows.win_shell:
+        powershell -Command "$env:PWSH_INSTALL_FOLDER; pwsh -Command '$PSVersionTable.PSVersion.ToString()'"
+      register: version
+
+    - name: Show version
+      debug:
+        var: version.stdout

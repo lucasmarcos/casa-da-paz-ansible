@@ -1,0 +1,10 @@
+- hosts: paz
+  gather_facts: no
+  vars:
+    pwsh_version: 7.6.0
+    pwsh_url: https://github.com/PowerShell/PowerShell/releases/download/v{{ pwsh_version }}/PowerShell-{{ pwsh_version }}-win-x64.msi
+
+  tasks:
+    - name: Download PowerShell to Desktop
+      ansible.windows.win_shell:
+        cmd /c curl -L -o "%USERPROFILE%\Desktop\PowerShell-{{ pwsh_version }}-win-x64.msi" "{{ pwsh_url }}"
