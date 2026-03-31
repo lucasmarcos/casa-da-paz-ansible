@@ -19,6 +19,8 @@ chrome_ntp_shortcuts:
     url: https://lucasmarcos.github.io/jogos
   - name: DuckDuckGo
     url: https://ddg.gg
+  - name: meow.camera
+    url: https://meow.camera
 
 firefox_version: 145.0.1
 firefox_installer_url: https://ftp.mozilla.org/pub/firefox/releases/{{ firefox_version }}/win64/pt-BR/Firefox%20Setup%20{{ firefox_version }}.msi
