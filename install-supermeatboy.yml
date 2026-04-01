@@ -1,0 +1,40 @@
+- hosts: paz
+  gather_facts: no
+  vars:
+    supermeatboy_local_path: /home/lucas/Downloads/SuperMeatBoy_20181019_Humble.zip
+    supermeatboy_remote_path: '{{ windows_temp_dir }}\SuperMeatBoy_20181019_Humble.zip'
+    supermeatboy_install_dir: '{{ desktop_dir }}\SuperMeatBoy'
+    supermeatboy_binary_path: '{{ supermeatboy_install_dir }}\SuperMeatBoy.exe'
+
+  tasks:
+    - ansible.builtin.stat:
+        path: '{{ supermeatboy_local_path }}'
+      register: local_file
+
+    - ansible.builtin.fail:
+        msg: Arquivo local nao encontrado em {{ supermeatboy_local_path }}.
+      when: not local_file.stat.exists
+
+    - ansible.windows.win_stat:
+        path: '{{ supermeatboy_binary_path }}'
+      register: supermeatboy_binary
+
+    - ansible.windows.win_copy:
+        src: '{{ supermeatboy_local_path }}'
+        dest: '{{ supermeatboy_remote_path }}'
+      when: not supermeatboy_binary.stat.exists
+
+    - ansible.windows.win_command: >-
+        {{ seven_zip_binary_path }}
+        x
+        -aoa
+        -o{{ supermeatboy_install_dir }}
+        {{ supermeatboy_remote_path }}
+      args:
+        creates: '{{ supermeatboy_binary_path }}'
+      when: not supermeatboy_binary.stat.exists
+
+    - ansible.windows.win_file:
+        path: '{{ supermeatboy_remote_path }}'
+        state: absent
+      when: not supermeatboy_binary.stat.exists
