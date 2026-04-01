@@ -5,36 +5,56 @@
     supermeatboy_remote_path: '{{ windows_temp_dir }}\SuperMeatBoy_20181019_Humble.zip'
     supermeatboy_install_dir: '{{ desktop_dir }}\SuperMeatBoy'
     supermeatboy_binary_path: '{{ supermeatboy_install_dir }}\SuperMeatBoy.exe'
+    supermeatboy_shortcut_path: '{{ desktop_dir }}\Super Meat Boy.lnk'
 
   tasks:
-    - ansible.builtin.stat:
-        path: '{{ supermeatboy_local_path }}'
-      register: local_file
-
-    - ansible.builtin.fail:
-        msg: Arquivo local nao encontrado em {{ supermeatboy_local_path }}.
-      when: not local_file.stat.exists
-
-    - ansible.windows.win_stat:
+    - name: Verifica Super Meat Boy
+      ansible.windows.win_stat:
         path: '{{ supermeatboy_binary_path }}'
       register: supermeatboy_binary
 
-    - ansible.windows.win_copy:
+    - name: Verifica arquivo local
+      ansible.builtin.stat:
+        path: '{{ supermeatboy_local_path }}'
+      register: local_file
+      delegate_to: localhost
+
+    - name: Falha se arquivo local nao encontrado
+      ansible.builtin.fail:
+        msg: Arquivo local nao encontrado em {{ supermeatboy_local_path }}.
+      when: not local_file.stat.exists
+
+    - name: Copia arquivo para maquina remota
+      ansible.windows.win_copy:
         src: '{{ supermeatboy_local_path }}'
         dest: '{{ supermeatboy_remote_path }}'
       when: not supermeatboy_binary.stat.exists
 
-    - ansible.windows.win_command: >-
-        {{ seven_zip_binary_path }}
-        x
-        -aoa
-        -o{{ supermeatboy_install_dir }}
-        {{ supermeatboy_remote_path }}
+    - name: Cria diretorio de instalacao
+      ansible.windows.win_file:
+        path: '{{ supermeatboy_install_dir }}'
+        state: directory
+      when: not supermeatboy_binary.stat.exists
+
+    - name: Extrai arquivo zip
+      ansible.windows.win_shell: '& "{{ seven_zip_binary_path }}" x -aoa -o"{{ supermeatboy_install_dir }}" "{{ supermeatboy_remote_path }}"'
       args:
         creates: '{{ supermeatboy_binary_path }}'
       when: not supermeatboy_binary.stat.exists
 
-    - ansible.windows.win_file:
+    - name: Remove arquivo zip
+      ansible.windows.win_file:
         path: '{{ supermeatboy_remote_path }}'
         state: absent
       when: not supermeatboy_binary.stat.exists
+
+    - name: Cria atalho na area de trabalho
+      ansible.windows.win_shell: |
+        $TargetFile = "{{ supermeatboy_binary_path }}"
+        $ShortcutFile = "{{ supermeatboy_shortcut_path }}"
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+        $Shortcut.TargetPath = $TargetFile
+        $Shortcut.Save()
+      args:
+        creates: '{{ supermeatboy_shortcut_path }}'
