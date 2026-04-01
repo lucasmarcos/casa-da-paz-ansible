@@ -1,0 +1,13 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - name: Baixa DirectX
+      ansible.windows.win_get_url:
+        url: https://download.microsoft.com/download/8/4/a/84a35bf1-dafe-4ae8-82af-ad2ae20b6b14/directx_Jun2010_redist.exe
+        dest: '{{ windows_temp_dir }}\directx_Jun2010_redist.exe'
+
+    - name: Extrai DirectX
+      ansible.windows.win_shell: '& "{{ windows_temp_dir }}\directx_Jun2010_redist.exe" /Q /C /T:"{{ windows_temp_dir }}\directx"'
+
+    - name: Instala DirectX
+      ansible.windows.win_shell: '& "{{ windows_temp_dir }}\directx\DXSETUP.exe" /silent'
