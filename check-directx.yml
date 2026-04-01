@@ -1,0 +1,11 @@
+- hosts: paz
+  gather_facts: no
+  tasks:
+    - name: Verifica DLL do DirectX
+      ansible.windows.win_shell: Test-Path 'C:\Windows\System32\d3dx9_43.dll'
+      register: dx_dll
+
+    - ansible.builtin.assert:
+        that: dx_dll.stdout | trim == 'True'
+        fail_msg: DirectX nao instalado
+        success_msg: DirectX instalado
