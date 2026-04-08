@@ -4,22 +4,21 @@
   vars:
     zip_name: 'luanti-5.15.1-win64'
     folder_name: 'Luanti'
-    exe_path: "luanti-5.15.1-win64/bin"
+    work_path: "luanti-5.15.1-win64/bin"
     exe_name: 'luanti'
     lnk_name: 'Luanti'
 
-    local_path: '/home/lucas/Downloads/{{ zip_name }}.zip'
-
-    remote_path: '{{ windows_temp_dir }}\{{ zip_name }}.zip'
+    local_zip_path: '/home/lucas/Downloads/{{ zip_name }}.zip'
+    remote_zip_path: '{{ windows_temp_dir }}\{{ zip_name }}.zip'
     install_dir: '{{ desktop_dir }}\{{ folder_name }}'
-    binary_path: '{{ install_dir }}\{{ exe_path }}\{{ exe_name }}.exe'
+    exe_path: '{{ install_dir }}\{{ work_path }}\{{ exe_name }}.exe'
     shortcut_path: '{{ desktop_dir }}\{{ lnk_name}}.lnk'
 
   tasks:
     - name: Verifica remoto
       ansible.windows.win_stat:
-        path: '{{ binary_path }}'
-      register: binary
+        path: '{{ exe_path }}'
+      register: exe
 
     - name: Verifica arquivo local
       ansible.builtin.stat:
@@ -29,38 +28,32 @@
 
     - name: Falha se arquivo local nao encontrado
       ansible.builtin.fail:
-        msg: Arquivo local nao encontrado em {{ local_path }}.
+        msg: Arquivo local nao encontrado em {{ local_zip_path }}.
       when: not local_file.stat.exists
 
     - name: Copia arquivo para maquina remota
       ansible.windows.win_copy:
-        src: '{{ local_path }}'
-        dest: '{{ remote_path }}'
-      when: not binary.stat.exists
-
-    - name: Cria diretorio de instalacao
-      ansible.windows.win_file:
-        path: '{{ install_dir }}'
-        state: directory
-      when: not binary.stat.exists
+        src: '{{ local_zip_path }}'
+        dest: '{{ remote_zip_path }}'
+      when: not exe.stat.exists
 
     - name: Extrai arquivo zip
-      ansible.windows.win_shell: '& "{{ seven_zip_binary_path }}" x -aoa -o"{{ install_dir }}" "{{ remote_path }}"'
+      ansible.windows.win_shell: '& "{{ seven_zip_binary_path }}" x -o "{{ install_dir }}" "{{ remote_path }}"'
       args:
         creates: '{{ binary_path }}'
-      when: not binary.stat.exists
+      when: not exe.stat.exists
 
     - name: Remove arquivo zip
       ansible.windows.win_file:
-        path: '{{ remote_path }}'
+        path: '{{ remote_zip_path }}'
         state: absent
-      when: not binary.stat.exists
+      when: not exe.stat.exists
 
     - name: Cria atalho na area de trabalho
       ansible.windows.win_shell: |
-        $TargetFile = "{{ binary_path }}"
+        $TargetFile = "{{ exe_path }}"
         $ShortcutFile = "{{ shortcut_path }}"
-        $Path = "{{ install_dir }}\{{ exe_path }}"
+        $Path = "{{ install_dir }}\{{ work_path }}"
         $WScriptShell = New-Object -ComObject WScript.Shell
         $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
         $Shortcut.TargetPath = $TargetFile
