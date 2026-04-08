@@ -1,0 +1,26 @@
+- name: Fix veloren shortcut
+  hosts: paz
+  gather_facts: false
+  vars:
+    install_dir: '{{ desktop_dir }}\Veloren'
+    binary_path: '{{ install_dir }}\veloren-voxygen.exe'
+    shortcut_path: '{{ desktop_dir }}\Veloren.lnk'
+
+  tasks:
+    - name: Remove atalho antigo
+      ansible.windows.win_file:
+        path: '{{ shortcut_path }}'
+        state: absent
+
+    - name: Cria atalho na area de trabalho
+      ansible.windows.win_shell: |
+        $TargetFile = "{{ binary_path }}"
+        $ShortcutFile = "{{ shortcut_path }}"
+        $Path = "{{ install_dir }}"
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+        $Shortcut.TargetPath = $TargetFile
+        $Shortcut.WorkingDirectory = $Path
+        $Shortcut.Save()
+      args:
+        creates: '{{ shortcut_path }}'
