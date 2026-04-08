@@ -1,5 +1,8 @@
-- hosts: paz
+- name: Install mcpaz launcher
+  hosts: paz
   gather_facts: false
+  vars:
+    expected_node_version: 'v{{ node_version }}'
   tasks:
     - name: Verificar se o javaw do Temurin existe
       ansible.windows.win_stat:
@@ -8,7 +11,7 @@
 
     - name: Falhar se o Java nao estiver instalado
       ansible.builtin.fail:
-        msg: Java nao encontrado em {{ temurin_javaw_path }}. Rode install-temurin-jre.yml antes de instalar o mcpaz.
+        msg: "Java nao encontrado em {{ temurin_javaw_path }}. Rode install-temurin-jre.yml antes de instalar o mcpaz."
       when: not temurin_javaw_binary.stat.exists
 
     - name: Criar diretorio temporario do mcpaz
@@ -44,42 +47,42 @@
       ansible.windows.win_get_url:
         url: '{{ node_zip_url }}'
         dest: '{{ node_zip_path }}'
-      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != 'v{{ node_version }}'
+      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != expected_node_version
 
     - name: Desbloquear zip do Node.js
       ansible.windows.win_shell: |
         Unblock-File -LiteralPath '{{ node_zip_path }}'
-      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != 'v{{ node_version }}'
+      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != expected_node_version
 
     - name: Remover diretorio temporario extraido antigo do Node.js
       ansible.windows.win_file:
         path: '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}'
         state: absent
-      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != 'v{{ node_version }}'
+      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != expected_node_version
 
     - name: Extrair Node.js
       ansible.windows.win_shell: |
         Expand-Archive -LiteralPath '{{ node_zip_path }}' -DestinationPath '{{ mcpaz_temp_dir }}' -Force
       args:
         creates: '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}\node.exe'
-      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != 'v{{ node_version }}'
+      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != expected_node_version
 
     - name: Desbloquear arquivos extraidos do Node.js
       ansible.windows.win_shell: |
         Get-ChildItem -LiteralPath '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}' -Recurse -File |
           Unblock-File
-      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != 'v{{ node_version }}'
+      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != expected_node_version
 
     - name: Remover Node.js antigo do mcpaz
       ansible.windows.win_file:
         path: '{{ mcpaz_dir }}\node'
         state: absent
-      when: existing_node_binary.stat.exists and existing_node_version.stdout | trim != 'v{{ node_version }}'
+      when: existing_node_binary.stat.exists and existing_node_version.stdout | trim != expected_node_version
 
     - name: Mover Node.js para o diretorio do mcpaz
       ansible.windows.win_shell: |
         Move-Item -Path '{{ mcpaz_temp_dir }}\{{ node_dist_dir }}' -Destination '{{ mcpaz_dir }}\node'
-      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != 'v{{ node_version }}'
+      when: not existing_node_binary.stat.exists or existing_node_version.stdout | trim != expected_node_version
 
     - name: Garantir JAVA_PATH no .env.local
       ansible.windows.win_shell: |
@@ -113,19 +116,20 @@
       register: node_modules_dir
 
     - name: Instalar dependencias npm do mcpaz quando necessario
-      ansible.windows.win_command: >-
-        {{ mcpaz_dir }}\node\npm.cmd install
+      ansible.windows.win_command:
+        cmd: '{{ mcpaz_dir }}\node\npm.cmd install'
       args:
         chdir: '{{ mcpaz_dir }}'
-      when:
-        - not node_modules_dir.stat.exists or mcpaz_files.changed or not existing_node_binary.stat.exists or existing_node_version.stdout | trim != 'v{{ node_version }}'
+      when: not node_modules_dir.stat.exists or mcpaz_files.changed or
+        not existing_node_binary.stat.exists or existing_node_version.stdout | trim != expected_node_version
 
     - name: Conceder permissao de escrita e execucao para usuarios locais no mcpaz
       ansible.windows.win_shell: |
         icacls '{{ mcpaz_dir }}' /grant '*S-1-5-32-545:(OI)(CI)M' /T /C
       args:
         chdir: '{{ mcpaz_dir }}'
-      when: mcpaz_files.changed or not node_modules_dir.stat.exists or not existing_node_binary.stat.exists or (existing_node_version.stdout | trim) != 'v' + node_version
+      when: mcpaz_files.changed or not node_modules_dir.stat.exists or
+        not existing_node_binary.stat.exists or existing_node_version.stdout | trim != expected_node_version
 
     - name: Remover zip temporario do Node.js
       ansible.windows.win_file:

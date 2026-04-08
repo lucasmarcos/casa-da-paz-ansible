@@ -1,4 +1,5 @@
-- hosts: paz
+- name: Download PowerShell
+  hosts: paz
   gather_facts: false
   vars:
     pwsh_version: 7.6.0

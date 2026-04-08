@@ -1,15 +1,19 @@
-- hosts: paz
+- name: Install GCompris from local exe
+  hosts: paz
   gather_facts: false
   tasks:
-    - ansible.windows.win_stat:
+    - name: Verificar instalador local
+      ansible.windows.win_stat:
         path: '{{ gcompris_local_exe_path }}'
       register: gcompris_installer
 
-    - ansible.builtin.fail:
+    - name: Falhar se instalador local nao encontrado
+      ansible.builtin.fail:
         msg: Instalador local do GCompris nao encontrado em {{ gcompris_local_exe_path }}.
       when: not gcompris_installer.stat.exists
 
-    - ansible.windows.win_package:
+    - name: Instalar GCompris
+      ansible.windows.win_package:
         path: '{{ gcompris_local_exe_path }}'
         arguments: /S
         state: present

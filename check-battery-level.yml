@@ -1,4 +1,5 @@
-- hosts: paz
+- name: Check battery level
+  hosts: paz
   gather_facts: false
   tasks:
     - name: Consultar nivel de bateria
@@ -33,5 +34,5 @@
       register: battery_level
 
     - name: Exibir nivel de bateria
-      debug:
+      ansible.builtin.debug:
         msg: "{{ inventory_hostname }}: {{ battery_level.stdout | trim }}"

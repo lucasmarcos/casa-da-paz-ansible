@@ -1,5 +1,7 @@
-- hosts: paz
+- name: Install Firefox
+  hosts: paz
   gather_facts: false
   tasks:
-    - win_package:
+    - name: Instalar Firefox
+      ansible.windows.win_package:
         path: '{{ firefox_installer_url }}'

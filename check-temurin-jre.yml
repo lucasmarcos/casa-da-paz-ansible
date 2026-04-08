@@ -1,4 +1,5 @@
-- hosts: paz
+- name: Check Temurin JRE
+  hosts: paz
   gather_facts: false
   tasks:
     - name: Verificar se o javaw.exe do Temurin existe
@@ -7,7 +8,7 @@
       register: temurin_javaw_binary
 
     - name: Exibir status do JRE
-      debug:
+      ansible.builtin.debug:
         msg: >-
           {{ inventory_hostname }}:
           {{

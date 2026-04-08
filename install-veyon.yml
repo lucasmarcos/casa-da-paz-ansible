@@ -1,15 +1,19 @@
-- hosts: paz
+- name: Install Veyon
+  hosts: paz
   gather_facts: false
   tasks:
-    - ansible.windows.win_get_url:
+    - name: Baixar instalador do Veyon
+      ansible.windows.win_get_url:
         url: '{{ veyon_installer_url }}'
         dest: '{{ veyon_installer_path }}'
 
-    - ansible.windows.win_package:
+    - name: Instalar Veyon
+      ansible.windows.win_package:
         path: '{{ veyon_installer_path }}'
         arguments: /S /NoMaster
         state: present
 
-    - ansible.windows.win_file:
+    - name: Remover instalador do Veyon
+      ansible.windows.win_file:
         path: '{{ veyon_installer_path }}'
         state: absent

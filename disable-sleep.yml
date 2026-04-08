@@ -1,4 +1,5 @@
-- hosts: paz
+- name: Disable sleep
+  hosts: paz
   gather_facts: false
   tasks:
     - name: Desabilitar sleep na tomada

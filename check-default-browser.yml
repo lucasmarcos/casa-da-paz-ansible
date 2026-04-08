@@ -1,4 +1,5 @@
-- hosts: paz
+- name: Check default browser
+  hosts: paz
   gather_facts: false
   tasks:
     - name: Consultar navegador padrao do usuario atual
@@ -29,5 +30,5 @@
       register: default_browser
 
     - name: Exibir navegador padrao
-      debug:
+      ansible.builtin.debug:
         msg: "{{ inventory_hostname }}: {{ default_browser.stdout | trim }}"

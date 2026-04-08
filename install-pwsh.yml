@@ -1,4 +1,5 @@
-- hosts: paz
+- name: Install PowerShell
+  hosts: paz
   gather_facts: false
   vars:
     pwsh_version: 7.6.0
@@ -28,5 +29,5 @@
       register: version
 
     - name: Show version
-      debug:
+      ansible.builtin.debug:
         var: version.stdout

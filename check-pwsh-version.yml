@@ -1,4 +1,5 @@
-- hosts: paz
+- name: Check PowerShell version
+  hosts: paz
   gather_facts: false
   tasks:
     - name: Verificar versao do PowerShell 7
@@ -10,5 +11,5 @@
       register: pwsh_version
 
     - name: Exibir versao
-      debug:
+      ansible.builtin.debug:
         msg: "{{ inventory_hostname }}: {{ pwsh_version.stdout | trim }}"

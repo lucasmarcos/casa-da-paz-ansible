@@ -2,5 +2,6 @@
   hosts: paz
   gather_facts: false
   tasks:
-    - ansible.windows.win_shell: |
+    - name: Habilitar tela touch
+      ansible.windows.win_shell: |
         Get-PnpDevice | Where-Object { $_.FriendlyName -like '*touch screen*' } | Enable-PnpDevice -Confirm:$false

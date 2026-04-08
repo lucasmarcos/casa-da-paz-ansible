@@ -1,4 +1,5 @@
-- hosts: paz
+- name: Install SuperMeatBoy
+  hosts: paz
   gather_facts: false
   vars:
     supermeatboy_local_path: /home/lucas/Downloads/SuperMeatBoy_20181019_Humble.zip

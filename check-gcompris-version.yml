@@ -1,11 +1,14 @@
-- hosts: paz
+- name: Check GCompris version
+  hosts: paz
   gather_facts: false
   tasks:
-    - ansible.windows.win_shell: |
+    - name: Consultar versao do GCompris
+      ansible.windows.win_shell: |
         (Get-ChildItem "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" |
           Get-ItemProperty |
           Where-Object { $_.DisplayName -like "*GCompris*" }).DisplayVersion
       register: gcompris_version
 
-    - debug:
+    - name: Exibir versao do GCompris
+      ansible.builtin.debug:
         msg: "{{ inventory_hostname }}: {{ gcompris_version.stdout | trim }}"

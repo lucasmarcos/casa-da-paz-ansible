@@ -1,4 +1,5 @@
-- hosts: paz
+- name: Check mcpaz Node.js
+  hosts: paz
   gather_facts: false
   tasks:
     - name: Verificar arquivos principais do mcpaz
@@ -22,7 +23,7 @@
       register: mcpaz_paths
 
     - name: Exibir arquivos principais
-      debug:
+      ansible.builtin.debug:
         msg: "{{ mcpaz_paths.stdout_lines }}"
 
     - name: Verificar bloqueio e ACL do node.exe
@@ -49,7 +50,7 @@
       register: node_metadata
 
     - name: Exibir bloqueio e ACL do node.exe
-      debug:
+      ansible.builtin.debug:
         msg: "{{ node_metadata.stdout_lines }}"
 
     - name: Testar execucao do node.exe
@@ -59,7 +60,7 @@
       failed_when: false
 
     - name: Exibir resultado da execucao do node.exe
-      debug:
+      ansible.builtin.debug:
         msg:
           - "rc={{ node_exec.rc }}"
           - "stdout={{ node_exec.stdout | trim }}"
@@ -74,7 +75,7 @@
       failed_when: false
 
     - name: Exibir resultado do npm.cmd
-      debug:
+      ansible.builtin.debug:
         msg:
           - "rc={{ npm_exec.rc }}"
           - "stdout={{ npm_exec.stdout | trim }}"
@@ -89,5 +90,5 @@
       failed_when: false
 
     - name: Exibir .env.local
-      debug:
+      ansible.builtin.debug:
         msg: "{{ mcpaz_env_local.stdout_lines }}"

@@ -1,14 +1,18 @@
-- hosts: paz
+- name: Install GCompris
+  hosts: paz
   gather_facts: false
   tasks:
-    - ansible.windows.win_get_url:
+    - name: Baixar instalador do GCompris
+      ansible.windows.win_get_url:
         url: '{{ gcompris_installer_url }}'
         dest: '{{ gcompris_installer_path }}'
 
-    - ansible.windows.win_package:
+    - name: Instalar GCompris
+      ansible.windows.win_package:
         path: '{{ gcompris_installer_path }}'
         state: present
 
-    - ansible.windows.win_file:
+    - name: Remover instalador do GCompris
+      ansible.windows.win_file:
         path: '{{ gcompris_installer_path }}'
         state: absent

@@ -1,9 +1,12 @@
-- hosts: paz
+- name: Configure Firefox policies
+  hosts: paz
   gather_facts: false
   tasks:
-    - win_file:
+    - name: Criar diretorio de distribuicao do Firefox
+      ansible.windows.win_file:
         path: '{{ firefox_distribution_dir }}'
         state: directory
-    - win_copy:
+    - name: Copiar arquivo de politicas do Firefox
+      ansible.windows.win_copy:
         src: policies.json
         dest: '{{ firefox_distribution_dir }}\policies.json'

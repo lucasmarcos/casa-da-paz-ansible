@@ -1,4 +1,5 @@
-- hosts: paz
+- name: Set Chrome as default browser
+  hosts: paz
   gather_facts: false
   tasks:
     - name: Verificar Chrome em Program Files
@@ -38,5 +39,6 @@
         type: string
 
     - name: Importar associacoes padrao no Windows
-      ansible.windows.win_command: >-
-        Dism.exe /Online /Import-DefaultAppAssociations:{{ chrome_default_associations_path }}
+      ansible.windows.win_command:
+        cmd: >-
+          Dism.exe /Online /Import-DefaultAppAssociations:{{ chrome_default_associations_path }}

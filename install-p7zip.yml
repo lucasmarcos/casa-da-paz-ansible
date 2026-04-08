@@ -1,5 +1,7 @@
-- hosts: paz
+- name: Install p7zip
+  hosts: paz
   gather_facts: false
   tasks:
-    - win_package:
+    - name: Instalar 7-Zip
+      ansible.windows.win_package:
         path: '{{ seven_zip_installer_url }}'

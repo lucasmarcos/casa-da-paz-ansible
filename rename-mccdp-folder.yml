@@ -1,23 +1,29 @@
-- hosts: paz
+- name: Rename mccdp folder
+  hosts: paz
   gather_facts: false
   tasks:
-    - ansible.windows.win_stat:
+    - name: Verificar diretorio mcpaz
+      ansible.windows.win_stat:
         path: '{{ mcpaz_desktop_dir }}'
       register: mcpaz_folder
 
-    - ansible.windows.win_stat:
+    - name: Verificar diretorio mccdp antigo
+      ansible.windows.win_stat:
         path: '{{ mccdp_old_dir }}'
       register: mccdp_folder
 
-    - ansible.builtin.fail:
+    - name: Falhar se pasta nao encontrada
+      ansible.builtin.fail:
         msg: Pasta {{ mccdp_old_dir }} nao encontrada para renomear.
       when:
         - not mcpaz_folder.stat.exists
         - not mccdp_folder.stat.exists
 
-    - ansible.windows.win_command: >-
-        powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
-        -Command "Rename-Item -Path '{{ mccdp_old_dir }}' -NewName 'mcpaz'"
+    - name: Renomear pasta
+      ansible.windows.win_command:
+        cmd: >-
+          powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass
+          -Command "Rename-Item -Path '{{ mccdp_old_dir }}' -NewName 'mcpaz'"
       when:
         - not mcpaz_folder.stat.exists
         - mccdp_folder.stat.exists
