@@ -1,0 +1,14 @@
+- name: Update mcpaz
+  hosts: paz
+  gather_facts: false
+
+  tasks:
+    - name: Remover dotenv antigo
+      ansible.windows.win_file:
+        path: '{{ mcpaz_dir }}\.env'
+        state: absent
+
+    - name: Copiar dotenv novo
+      ansible.windows.win_copy:
+        src: mcpaz/.env
+        dest: '{{ mcpaz_dir }}\.env'
