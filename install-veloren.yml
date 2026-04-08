@@ -1,0 +1,63 @@
+- name: Install veloren
+  hosts: paz
+  gather_facts: false
+  vars:
+    veloren_local_path: /home/lucas/veloren/win/veloren.zip
+    veloren_remote_path: '{{ windows_temp_dir }}\veloren.zip'
+    veloren_install_dir: '{{ desktop_dir }}\Veloren'
+    veloren_binary_path: '{{ veloren_install_dir }}\veloren-voxygen.exe'
+    veloren_shortcut_path: '{{ desktop_dir }}\Veloren.lnk'
+
+  tasks:
+    - name: Verifica Veloren
+      ansible.windows.win_stat:
+        path: '{{ veloren_binary_path }}'
+      register: veloren_binary
+
+    - name: Verifica arquivo local
+      ansible.builtin.stat:
+        path: '{{ veloren_local_path }}'
+      register: local_file
+      delegate_to: localhost
+
+    - name: Falha se arquivo local nao encontrado
+      ansible.builtin.fail:
+        msg: Arquivo local nao encontrado em {{ veloren_local_path }}.
+      when: not local_file.stat.exists
+
+    - name: Copia arquivo para maquina remota
+      ansible.windows.win_copy:
+        src: '{{ veloren_local_path }}'
+        dest: '{{ veloren_remote_path }}'
+      when: not veloren_binary.stat.exists
+
+    - name: Cria diretorio de instalacao
+      ansible.windows.win_file:
+        path: '{{ veloren_install_dir }}'
+        state: directory
+      when: not veloren_binary.stat.exists
+
+    - name: Extrai arquivo zip
+      ansible.windows.win_shell: '& "{{ seven_zip_binary_path }}" x -aoa -o"{{ veloren_install_dir }}" "{{ veloren_remote_path }}"'
+      args:
+        creates: '{{ veloren_binary_path }}'
+      when: not veloren_binary.stat.exists
+
+    - name: Remove arquivo zip
+      ansible.windows.win_file:
+        path: '{{ veloren_remote_path }}'
+        state: absent
+      when: not veloren_binary.stat.exists
+
+    - name: Cria atalho na area de trabalho
+      ansible.windows.win_shell: |
+        $TargetFile = "{{ veloren_binary_path }}"
+        $Path = "{{ veloren_install_dir }}"
+        $ShortcutFile = "{{ veloren_shortcut_path }}"
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+        $Shortcut.TargetPath = $TargetFile
+        $Shortcut.WorkingDirectory = $Path
+        $Shortcut.Save()
+      args:
+        creates: '{{ veloren_shortcut_path }}'
