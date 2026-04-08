@@ -1,1 +1,2 @@
 - Instalar Minecraft no computador `PAZ11`.
+- Corrigir PATH no atalho de SMB
