@@ -1,5 +1,5 @@
 - hosts: paz
-  gather_facts: no
+  gather_facts: false
   vars:
     pwsh_version: 7.6.0
     pwsh_url: https://github.com/PowerShell/PowerShell/releases/download/v{{ pwsh_version }}/PowerShell-{{ pwsh_version }}-win-x64.msi

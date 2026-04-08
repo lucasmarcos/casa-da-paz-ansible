@@ -1,5 +1,5 @@
 - hosts: paz
-  gather_facts: no
+  gather_facts: false
   tasks:
     - ansible.windows.win_get_url:
         url: '{{ gcompris_installer_url }}'

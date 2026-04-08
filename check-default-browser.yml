@@ -1,5 +1,5 @@
 - hosts: paz
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Consultar navegador padrao do usuario atual
       ansible.windows.win_shell: |

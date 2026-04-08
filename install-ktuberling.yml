@@ -1,5 +1,5 @@
 - hosts: paz
-  gather_facts: no
+  gather_facts: false
   tasks:
     - ansible.windows.win_stat:
         path: '{{ seven_zip_binary_path }}'

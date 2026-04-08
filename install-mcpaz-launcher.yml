@@ -1,5 +1,5 @@
 - hosts: paz
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Verificar se o javaw do Temurin existe
       ansible.windows.win_stat:

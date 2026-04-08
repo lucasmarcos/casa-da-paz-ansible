@@ -1,5 +1,5 @@
 - hosts: paz
-  gather_facts: no
+  gather_facts: false
   vars:
     supermeatboy_local_path: /home/lucas/Downloads/SuperMeatBoy_20181019_Humble.zip
     supermeatboy_remote_path: '{{ windows_temp_dir }}\SuperMeatBoy_20181019_Humble.zip'
