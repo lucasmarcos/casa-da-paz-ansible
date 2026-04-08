@@ -1,7 +1,8 @@
-- hosts: paz
+- name: Set Chrome Shortcuts
+  hosts: paz
   gather_facts: false
   tasks:
-    - win_regedit:
+    - ansible.windows.win_regedit:
         path: HKLM:\SOFTWARE\Policies\Google\Chrome
         name: NTPShortcuts
         data: '{{ chrome_ntp_shortcuts | to_json }}'

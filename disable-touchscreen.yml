@@ -1,5 +1,6 @@
-- hosts: paz
+- name: Disable touchscreen
+  hosts: paz
   gather_facts: false
   tasks:
-    - win_shell: |
+    - ansible.windows.win_shell: |
         Get-PnpDevice | Where-Object { $_.FriendlyName -like '*touch screen*' } | Disable-PnpDevice -Confirm:$false
