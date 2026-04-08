@@ -1,0 +1,21 @@
+- name: Fix smb shortcut
+  hosts: paz
+  gather_facts: false
+  vars:
+    supermeatboy_install_dir: '{{ desktop_dir }}\SuperMeatBoy'
+    supermeatboy_binary_path: '{{ supermeatboy_install_dir }}\SuperMeatBoy.exe'
+    supermeatboy_shortcut_path: '{{ desktop_dir }}\Super Meat Boy.lnk'
+
+  tasks:
+    - name: Cria atalho na area de trabalho
+      ansible.windows.win_shell: |
+        $TargetFile = "{{ supermeatboy_binary_path }}"
+        $ShortcutFile = "{{ supermeatboy_shortcut_path }}"
+        $Path = "{{ supermeatboy_install_dir }}"
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+        $Shortcut.TargetPath = $TargetFile
+        $Shortcut.WorkingDirectory = $Path
+        $Shortcut.Save()
+      args:
+        creates: '{{ supermeatboy_shortcut_path }}'
