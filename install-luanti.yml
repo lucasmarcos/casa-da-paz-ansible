@@ -22,7 +22,7 @@
 
     - name: Verifica arquivo local
       ansible.builtin.stat:
-        path: '{{ local_path }}'
+        path: '{{ local_zip_path }}'
       register: local_file
       delegate_to: localhost
 
@@ -38,9 +38,9 @@
       when: not exe.stat.exists
 
     - name: Extrai arquivo zip
-      ansible.windows.win_shell: '& "{{ seven_zip_binary_path }}" x -o "{{ install_dir }}" "{{ remote_path }}"'
+      ansible.windows.win_shell: '& "{{ seven_zip_binary_path }}" x -o"{{ install_dir }}" "{{ remote_zip_path }}"'
       args:
-        creates: '{{ binary_path }}'
+        creates: '{{ exe_path }}'
       when: not exe.stat.exists
 
     - name: Remove arquivo zip
