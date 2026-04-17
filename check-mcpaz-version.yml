@@ -1,0 +1,13 @@
+- name: Check mcpaz version
+  hosts: paz
+  gather_facts: false
+
+  tasks:
+    - name: mcenv
+      ansible.builtin.slurp:
+        path: '{{ mcpaz_dir }}\.env'
+      register: mcversion
+
+    - name: debug
+      ansible.builtin.debug:
+        msg: "{{ mcversion }}"
