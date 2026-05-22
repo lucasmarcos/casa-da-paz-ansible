@@ -1,0 +1,8 @@
+- name: Install new ssh key
+  hosts: paz
+  gather_facts: false
+  tasks:
+    - name: Install new ssh key
+      community.windows.win_lineinfile:
+        path: C:\ProgramData\ssh\administrators_authorized_keys
+        line: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOxV4fk3GSPft8ggQJRRFf9LDj/aQ2NwNtmP6lGcTOKh lucas@pazxx'
