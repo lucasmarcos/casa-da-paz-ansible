@@ -55,9 +55,8 @@ temurin_jre_install_dir: C:\Program Files\Eclipse Adoptium\jre-25.0.2.10-hotspot
 temurin_java_path: '{{ temurin_jre_install_dir }}\bin\java.exe'
 temurin_javaw_path: '{{ temurin_jre_install_dir }}\bin\javaw.exe'
 
-veyon_version: 4.10.2
-vey: https://github.com/veyon/veyon/releases/download/v4.10.2/veyon-4.10.2.0-win64-setup.exe
-veyon_installer_url: https://github.com/veyon/veyon/releases/download/{{ veyon_version }}/veyon-{{ veyon_version }}.0-win64-setup.exe
+veyon_version: 4.10.3.11
+veyon_installer_url: https://github.com/veyon/veyon/releases/download/v4.10.3/veyon-4.10.3.11-win64-setup.exe
 veyon_installer_path: '{{ windows_temp_dir }}\veyon-{{ veyon_version }}-win64-setup.exe'
 
 mccdp_old_dir: '{{ desktop_dir }}\mccdp-win'
